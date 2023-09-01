@@ -1,6 +1,6 @@
 function abrirCarrinho() {
-  document.getElementById("carrinho").classList.add("right-[0px]");
   document.getElementById("carrinho").classList.remove("right-[-360px]");
+  document.getElementById("carrinho").classList.add("right-[0px]");
 }
 
 function fecharCarrinho() {
@@ -9,8 +9,8 @@ function fecharCarrinho() {
 }
 
 export function inicializarCarrinho() {
-  const botaoFecharCarrinho = document.getElementById("fechar-carrinho");
-  const botaoAbrirCarrinho = document.getElementById("abrir-carrinho");
+  const botaoFecharCarrinho = document.getElementById("fecharCarrinho");
+  const botaoAbrirCarrinho = document.getElementById("abrirCarrinho");
 
   botaoFecharCarrinho.addEventListener("click", fecharCarrinho);
   botaoAbrirCarrinho.addEventListener("click", abrirCarrinho);
