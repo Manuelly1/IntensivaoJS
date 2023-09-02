@@ -20,12 +20,22 @@ export function inicializarCarrinho() {
   botaoAbrirCarrinho.addEventListener("click", abrirCarrinho);
 }
 
+function removerDoCarrinho(idProduto) {
+  delete idsProdutoCarrinhoComQuantidade[idProduto];
+  renderizarProdutosCarrinho();
+}
+
 function incrementarQuantidadeProduto(idProduto) {
   idsProdutoCarrinhoComQuantidade[idProduto]++;
   atualizarInformacaoQuantidade(idProduto);
 }
 
 function decrementarQuantidadeProduto(idProduto) {
+  if (idsProdutoCarrinhoComQuantidade[idProduto] === 1) {
+    removerDoCarrinho(idProduto);
+    return;
+  } 
+
   idsProdutoCarrinhoComQuantidade[idProduto]--;
   atualizarInformacaoQuantidade(idProduto);
 }
@@ -34,18 +44,24 @@ function atualizarInformacaoQuantidade(idProduto) {
   document.getElementById(`quantidade-${idProduto}`).innerText = idsProdutoCarrinhoComQuantidade[idProduto];
 }
 
-export function adicionarAoCarrinho(idProduto) {
-  if (idProduto in idsProdutoCarrinhoComQuantidade) {
-      incrementarQuantidadeProduto(idProduto);
-      return;
-  }
-
-  idsProdutoCarrinhoComQuantidade[idProduto] = 1;
+function desenharProdutoNoCarrinho(idProduto) {
   const produto = catalogo.find(p => p.id === idProduto);
   const containerProdutosCarrinho = document.getElementById("produtos-carrinho");
 
-  const cartaoProdutoCarrinho = `<article class="flex bg-slate-100 rounded-lg p-1 relative">
-  '  <button id="fecharCarrinho" class="absolute top-0 right-2">
+  const elementoArticle =document.createElement("article"); // cria a tag <article></article> vazia
+  const articleClasses = [
+    "flex", 
+    "bg-slate-100", 
+    "rounded-lg", 
+    "p-1", 
+    "relative"
+  ];
+
+  for (const articleClass of articleClasses) {
+    elementoArticle.classList.add(articleClass);
+  }
+
+  const cartaoProdutoCarrinho = `<button id="remover-item-${produto.id}" class="absolute top-0 right-2">
       <i class="fa-solid fa-circle-xmark text-slate-500 hover:text-slate-800"></i>
     </button>
     <img 
@@ -59,10 +75,44 @@ export function adicionarAoCarrinho(idProduto) {
       <p class="text-green-700 text-lg">$${produto.preco}</p>
     </div>
     <div class="flex text-slate-950 items-end absolute bottom-0 right-2 text-lg">
-      <button>-</button>
+      <button id="decrementar-produto-${produto.id}">-</button>
       <p id="quantidade-${produto.id}" class="ml-2">${idsProdutoCarrinhoComQuantidade[produto.id]}</p>
-      <button class="ml-2">+</button>
-    </div>
-  </article>`;
-  containerProdutosCarrinho.innerHTML += cartaoProdutoCarrinho;
+      <button id="incrementar-produto-${produto.id}" class="ml-2">+</button>
+    </div>`;
+  // <article class="flex bg-slate-100 rounded-lg p-1 relative">Código do cartão do produto</article> 
+
+  elementoArticle.innerHTML = cartaoProdutoCarrinho;
+  containerProdutosCarrinho.appendChild(elementoArticle);
+
+  document
+    .getElementById(`decrementar-produto-${produto.id}`)
+    .addEventListener("click", () => decrementarQuantidadeProduto(produto.id));
+
+  document
+    .getElementById(`incrementar-produto-${produto.id}`)
+    .addEventListener("click", () => incrementarQuantidadeProduto(produto.id));
+
+  document
+    .getElementById(`remover-item-${produto.id}`)
+    .addEventListener("click", () => removerDoCarrinho(produto.id));
+}
+
+function renderizarProdutosCarrinho() {
+  const containerProdutosCarrinho = document.getElementById("produtos-carrinho");
+  containerProdutosCarrinho.innerHTML = "";
+
+  for (const idProduto in idsProdutoCarrinhoComQuantidade) {
+    desenharProdutoNoCarrinho(idProduto);
+  }
+
+}
+
+export function adicionarAoCarrinho(idProduto) {
+  if (idProduto in idsProdutoCarrinhoComQuantidade) {
+      incrementarQuantidadeProduto(idProduto);
+      return;
+  }
+  idsProdutoCarrinhoComQuantidade[idProduto] = 1;
+
+  desenharProdutoNoCarrinho(idProduto);
 }
