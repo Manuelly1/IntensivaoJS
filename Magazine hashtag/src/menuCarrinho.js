@@ -39,5 +39,4 @@ export function adicionarAoCarrinho(idProduto) {
   </article>`;
 
   containerProdutosCarrinho.innerHTML += cartaoProdutoCarrinho;
-  console.log("ADICIONOU!")
 }
